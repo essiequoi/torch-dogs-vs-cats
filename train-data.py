@@ -49,7 +49,7 @@ data_transforms = {
 
 
 # data_dir = 'data'
-data_dir = '/opt/datastore'
+data_dir = '/opt/datastore/data'
 CHECK_POINT_PATH = 'checkpoint.tar'
 SUBMISSION_FILE = 'submission.csv'
 
