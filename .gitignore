@@ -1,3 +1,5 @@
 *.ipynb
 *.jpg
 *.tar
+data*
+.DS_Store
