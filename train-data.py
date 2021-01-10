@@ -217,7 +217,7 @@ model_conv, best_val_loss, best_val_acc = train_model(model_conv,
                                                       criterion,
                                                       optimizer_conv,
                                                       exp_lr_scheduler,
-                                                      num_epochs = 2,
+                                                      num_epochs = 5,
                                                       checkpoint = checkpoint)
 torch.save({'model_state_dict': model_conv.state_dict(),
             'optimizer_state_dict': optimizer_conv.state_dict(),
