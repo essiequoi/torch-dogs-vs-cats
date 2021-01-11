@@ -312,7 +312,7 @@ model_conv(minibatch)
 
 
 softMax = nn.Softmax(dim = 1)
-preds = softMax(model_conv(minibatch))
+preds = softMax(model_conv(minibatch.cuda()))
 preds
 
 
@@ -322,7 +322,7 @@ preds
 def predict_dog_prob_of_single_instance(model, tensor):
     batch = torch.stack([tensor])
     softMax = nn.Softmax(dim = 1)
-    preds = softMax(model(batch))
+    preds = softMax(model(batch.to(device)))
     return preds[0,1].item()
 
 
