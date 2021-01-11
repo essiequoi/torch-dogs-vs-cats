@@ -305,7 +305,7 @@ print(minibatch.size())
 # In[33]:
 
 
-model_conv(minibatch)
+model_conv(minibatch.cuda())
 
 
 # In[34]:
