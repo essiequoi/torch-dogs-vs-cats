@@ -352,7 +352,8 @@ id_to_dog_prob = {extract_file_id(fname):
                                                       test_data_from_fname(fname))
                   for fname in test_data_files}
 
-
+torch.save(model.state_dict(), "/lightning_logs")
+torch.save(model_conv.state_dict(), "/lightning_logs")
 # In[41]:
 
 
