@@ -174,7 +174,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=2, checkpoint
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    torch.save(model.state_dict(), "/lightning_logs")
+    torch.save(model.state_dict(), "/lightning_logs/model.pth")
     return model, best_loss, best_acc
 
 
