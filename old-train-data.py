@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
+# In[39]:
 
 
 import torch
@@ -23,7 +23,7 @@ print(torch.__version__)
 plt.ion() #interactive mode
 
 
-# In[8]:
+# In[17]:
 
 
 # Data augmentation and normalization for training
@@ -45,10 +45,11 @@ data_transforms = {
 }
 
 
-# In[9]:
+# In[18]:
 
 
-data_dir = 'data'
+# data_dir = 'data'
+data_dir = '/opt/datastore'
 CHECK_POINT_PATH = 'checkpoint.tar'
 SUBMISSION_FILE = 'submission.csv'
 
@@ -67,7 +68,7 @@ print(f'Train image size: {dataset_sizes["train"]}')
 print(f'Validation image size: {dataset_sizes["val"]}')
 
 
-# In[10]:
+# In[7]:
 
 
 def imshow(inp, title=None):
@@ -85,10 +86,10 @@ def imshow(inp, title=None):
 inputs, classes = next(iter(dataloaders['train']))
 # Make a grid from batch
 sample_train_images = torchvision.utils.make_grid(inputs)
-imshow(sample_train_images, title=classes)
+#imshow(sample_train_images, title=classes)
 
 
-# In[11]:
+# In[19]:
 
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=2, checkpoint = None):
@@ -177,13 +178,13 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=2, checkpoint
     return model, best_loss, best_acc
 
 
-# In[12]:
+# In[13]:
 
 
 model_conv = torchvision.models.resnet50(pretrained=True)
 
 
-# In[13]:
+# In[20]:
 
 
 for param in model_conv.parameters():
@@ -204,7 +205,7 @@ optimizer_conv = optim.SGD(model_conv.fc.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
 
 
-# In[14]:
+# In[22]:
 
 
 try:
@@ -217,7 +218,7 @@ model_conv, best_val_loss, best_val_acc = train_model(model_conv,
                                                       criterion,
                                                       optimizer_conv,
                                                       exp_lr_scheduler,
-                                                      num_epochs = 2,
+                                                      num_epochs = 5,
                                                       checkpoint = checkpoint)
 torch.save({'model_state_dict': model_conv.state_dict(),
             'optimizer_state_dict': optimizer_conv.state_dict(),
@@ -227,7 +228,7 @@ torch.save({'model_state_dict': model_conv.state_dict(),
             }, CHECK_POINT_PATH)
 
 
-# In[15]:
+# In[26]:
 
 
 # visualize data
@@ -259,16 +260,16 @@ def visualize_model(model, num_images=6):
         model.train(mode=was_training)
 
 
-# In[16]:
+# In[27]:
 
 
-visualize_model(model_conv)
+#visualize_model(model_conv)
 
 plt.ioff()
 plt.show()
 
 
-# In[34]:
+# In[28]:
 
 
 def apply_test_transforms(inp):
@@ -278,7 +279,7 @@ def apply_test_transforms(inp):
     return out
 
 
-# In[35]:
+# In[30]:
 
 
 from PIL import Image
@@ -288,28 +289,27 @@ im = Image.open(f'{test_data_dir}/{test_data_files[0]}')
 plt.imshow(im)
 
 
-# In[38]:
+# In[31]:
 
 
 im_as_tensor = apply_test_transforms(im)
 print(im_as_tensor.size())
-print(im_as_tensor.device)
 
 
-# In[39]:
+# In[32]:
 
 
 minibatch = torch.stack([im_as_tensor])
 print(minibatch.size())
 
 
-# In[49]:
+# In[33]:
 
 
 model_conv(minibatch.cuda())
 
 
-# In[50]:
+# In[34]:
 
 
 softMax = nn.Softmax(dim = 1)
@@ -317,7 +317,7 @@ preds = softMax(model_conv(minibatch.cuda()))
 preds
 
 
-# In[51]:
+# In[35]:
 
 
 def predict_dog_prob_of_single_instance(model, tensor):
@@ -327,7 +327,7 @@ def predict_dog_prob_of_single_instance(model, tensor):
     return preds[0,1].item()
 
 
-# In[52]:
+# In[36]:
 
 
 def test_data_from_fname(fname):
@@ -335,16 +335,16 @@ def test_data_from_fname(fname):
     return apply_test_transforms(im)
 
 
-# In[53]:
+# In[38]:
 
 
 def extract_file_id(fname):
-    print("Extracting id from " + fname)
+    #print("Extracting id from " + fname)
     return int(re.search('\d+', fname).group())
 extract_file_id("cat34432.jpg")
 
 
-# In[54]:
+# In[40]:
 
 
 model_conv.eval()
@@ -353,8 +353,9 @@ id_to_dog_prob = {extract_file_id(fname):
                                                       test_data_from_fname(fname))
                   for fname in test_data_files}
 
-
-# In[46]:
+torch.save(model.state_dict(), "/lightning_logs")
+torch.save(model_conv.state_dict(), "/lightning_logs")
+# In[41]:
 
 
 import pandas as pd
@@ -363,7 +364,7 @@ ds = pd.Series({id : label for (id, label) in zip(id_to_dog_prob.keys(), id_to_d
 ds.head()
 
 
-# In[47]:
+# In[42]:
 
 
 df = pd.DataFrame(ds, columns = ['label']).sort_index()
@@ -372,16 +373,10 @@ df = df[['id', 'label']]
 df.head()
 
 
-# In[48]:
+# In[43]:
 
 
 df.to_csv(SUBMISSION_FILE, index = False)
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
