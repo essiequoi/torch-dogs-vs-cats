@@ -18,6 +18,7 @@ import copy
 import math
 import re
 import pandas as pd
+from torch.utils.tensorboard import SummaryWriter
 
 print(torch.__version__)
 plt.ion() #interactive mode
@@ -48,7 +49,8 @@ data_transforms = {
 # In[9]:
 
 
-data_dir = 'data'
+#data_dir = 'data'
+data_dir = '/opt/datastore'
 CHECK_POINT_PATH = 'checkpoint.tar'
 SUBMISSION_FILE = 'submission.csv'
 
@@ -173,7 +175,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=2, checkpoint
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    torch.save(model.state_dict(), "/lightning_logs/model.pth")
+    #torch.save(model.state_dict(), "/lightning_logs/model.pth")
     return model, best_loss, best_acc
 
 
@@ -224,7 +226,7 @@ torch.save({'model_state_dict': model_conv.state_dict(),
             'best_val_loss': best_val_loss,
             'best_val_accuracy': best_val_acc,
             'scheduler_state_dict' : exp_lr_scheduler.state_dict(),
-            }, CHECK_POINT_PATH)
+            }, '/lightning_logs/model.pth')
 
 
 # In[15]:
@@ -354,16 +356,10 @@ id_to_dog_prob = {extract_file_id(fname):
                   for fname in test_data_files}
 
 
-# In[46]:
-
-
 import pandas as pd
 
 ds = pd.Series({id : label for (id, label) in zip(id_to_dog_prob.keys(), id_to_dog_prob.values())})
 ds.head()
-
-
-# In[47]:
 
 
 df = pd.DataFrame(ds, columns = ['label']).sort_index()
@@ -372,20 +368,12 @@ df = df[['id', 'label']]
 df.head()
 
 
-# In[48]:
-
-
 df.to_csv(SUBMISSION_FILE, index = False)
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
+writer = SummaryWriter("/lightning_logs")
+for n_iter in range(100):
+    writer.add_scalar('Loss/train', np.random.random(), n_iter)
+    writer.add_scalar('Loss/test', np.random.random(), n_iter)
+    writer.add_scalar('Accuracy/train', np.random.random(), n_iter)
+    writer.add_scalar('Accuracy/test', np.random.random(), n_iter)
 
